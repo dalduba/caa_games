@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rubik's Colors</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a, #000000);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 10px;
+        }
+        
+        /* Стартовый экран */
+        .start-screen {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+        
+        .title {
+            font-size: 3rem;
+            text-align: center;
+            margin: 20px 0 30px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            background: linear-gradient(to right, #ff8c00, #ff0080, #00bfff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .settings-panel {
+            width: 100%;
+            background: rgba(40, 40, 40, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #444;
+        }
+        
+        .setting {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(50, 50, 50, 0.5);
+            border-radius: 10px;
+        }
+        
+        .setting-label {
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+        
+        .counter {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .counter-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            min-width: 40px;
+            text-align: center;
+            color: #ff8c00;
+        }
+        
+        .counter-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #444;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .counter-btn:active {
+            background: #ff8c00;
+            transform: scale(0.95);
+        }
+        
+        .description {
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(40, 40, 40, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #444;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .description h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #00bfff;
+        }
+        
+        .description ul {
+            padding-left: 25px;
+            margin: 15px 0;
+        }
+        
+        .description li {
+            margin: 10px 0;
+        }
+        
+        .start-btn {
+            width: 80%;
+            max-width: 300px;
+            padding: 18px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(to right, #00b4db, #0083b0);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 0 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .start-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Игровой экран */
+        .game-screen {
+            width: 100%;
+            max-width: 600px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+        
+        .game-title {
+            font-size: 2.2rem;
+            text-align: center;
+            margin: 10px 0 25px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            background: linear-gradient(to right, #ff8c00, #ff0080, #00bfff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .game-board {
+            width: 100%;
+            display: flex;
+            gap: 1px;
+            margin-bottom: 30px;
+            background-color: #333;
+            padding: 1px;
+            border-radius: 5px;
+        }
+        
+        .cell {
+            flex: 1;
+            aspect-ratio: 1/1;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        
+        .cell:active {
+            transform: scale(0.95);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        #new-game {
+            background: linear-gradient(to right, #00b4db, #0083b0);
+            color: white;
+        }
+        
+        #reset-white {
+            background: linear-gradient(to right, #f5f7fa, #e4e7eb);
+            color: #333;
+        }
+        
+        #menu-btn {
+            background: linear-gradient(to right, #ff8c00, #ff5733);
+            color: white;
+        }
+        
+        /* Цвета для ячеек */
+        .color-white { background-color: #ffffff; }
+        .color-blue { background-color: #2196F3; }
+        .color-green { background-color: #4CAF50; }
+        .color-yellow { background-color: #FFEB3B; }
+        .color-orange { background-color: #FF9800; }
+        .color-red { background-color: #F44336; }
+        
+        /* Адаптивность */
+        @media (max-width: 600px) {
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .game-title {
+                font-size: 1.8rem;
+            }
+            
+            .setting-label {
+                font-size: 1.1rem;
+            }
+            
+            .counter-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            
+            .counter-value {
+                font-size: 1.5rem;
+            }
+            
+            .btn {
+                padding: 12px 0;
+                font-size: 1rem;
+            }
+            
+            .start-btn {
+                padding: 15px;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Стартовый экран -->
+    <div class="start-screen" id="start-screen">
+        <h1 class="title">Rubik's Colors</h1>
+        
+        <div class="settings-panel">
+            <!-- Настройка количества цветов -->
+            <div class="setting">
+                <div class="setting-label">Количество цветов:</div>
+                <div class="counter">
+                    <button class="counter-btn" id="color-dec"><i class="fas fa-chevron-left"></i></button>
+                    <div class="counter-value" id="color-value">2</div>
+                    <button class="counter-btn" id="color-inc"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            
+            <!-- Настройка длины полосы -->
+            <div class="setting">
+                <div class="setting-label">Длина полосы:</div>
+                <div class="counter">
+                    <button class="counter-btn" id="length-dec"><i class="fas fa-chevron-left"></i></button>
+                    <div class="counter-value" id="length-value">6</div>
+                    <button class="counter-btn" id="length-inc"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Описание цветов -->
+        <div class="description">
+            <h3>Описание цветов</h3>
+            <p>В зависимости от выбранного количества цветов будут доступны следующие цвета:</p>
+            <ul>
+                <li><span style="color:#ffffff">2 цвета:</span> Белый, Синий</li>
+                <li><span style="color:#ffffff">3 цвета:</span> Белый, Синий, Зеленый</li>
+                <li><span style="color:#ffffff">4 цвета:</span> Белый, Синий, Зеленый, Желтый</li>
+                <li><span style="color:#ffffff">5 цвета:</span> Белый, Синий, Зеленый, Желтый, Оранжевый</li>
+                <li><span style="color:#ffffff">6 цветов:</span> Белый, Синий, Зеленый, Желтый, Оранжевый, Красный</li>
+            </ul>
+            <p>Цвета меняются по циклу при нажатии на ячейку. При нажатии на ячейку также изменяются цвета ее соседей.</p>
+        </div>
+        
+        <button class="start-btn" id="start-btn">Старт</button>
+    </div>
+    
+    <!-- Игровой экран -->
+    <div class="game-screen" id="game-screen">
+        <h2 class="game-title">Rubik's Colors</h2>
+        
+        <div class="game-board" id="game-board">
+            <!-- Ячейки будут созданы динамически -->
+        </div>
+        
+        <div class="controls">
+            <button id="new-game" class="btn">Новая игра</button>
+            <button id="reset-white" class="btn">Все белые</button>
+            <button id="menu-btn" class="btn">Меню</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Константы игры
+            const COLORS = ['white', 'blue', 'green', 'yellow', 'orange', 'red'];
+            const COLOR_CLASSES = ['color-white', 'color-blue', 'color-green', 'color-yellow', 'color-orange', 'color-red'];
+            const MIN_CELLS = 2;
+            const MAX_CELLS = 6;
+            
+            // Элементы DOM
+            const startScreen = document.getElementById('start-screen');
+            const gameScreen = document.getElementById('game-screen');
+            const gameBoard = document.getElementById('game-board');
+            const startBtn = document.getElementById('start-btn');
+            const menuBtn = document.getElementById('menu-btn');
+            const colorDecBtn = document.getElementById('color-dec');
+            const colorIncBtn = document.getElementById('color-inc');
+            const colorValue = document.getElementById('color-value');
+            const lengthDecBtn = document.getElementById('length-dec');
+            const lengthIncBtn = document.getElementById('length-inc');
+            const lengthValue = document.getElementById('length-value');
+            
+            // Текущие настройки
+            let colorCount = 2;
+            let cellCount = 6;
+            
+            // Обработчики событий для стартового экрана
+            colorDecBtn.addEventListener('click', () => updateCounter('color', -1));
+            colorIncBtn.addEventListener('click', () => updateCounter('color', 1));
+            lengthDecBtn.addEventListener('click', () => updateCounter('length', -1));
+            lengthIncBtn.addEventListener('click', () => updateCounter('length', 1));
+            startBtn.addEventListener('click', startGame);
+            
+            // Функции стартового экрана
+            function updateCounter(type, change) {
+                if (type === 'color') {
+                    colorCount = Math.max(2, Math.min(6, colorCount + change));
+                    colorValue.textContent = colorCount;
+                } else {
+                    cellCount = Math.max(MIN_CELLS, Math.min(MAX_CELLS, cellCount + change));
+                    lengthValue.textContent = cellCount;
+                }
+            }
+            
+            function startGame() {
+                startScreen.style.display = 'none';
+                gameScreen.style.display = 'flex';
+                initializeGame();
+            }
+            
+            // Функции игрового экрана
+            function initializeGame() {
+                // Очищаем игровое поле
+                gameBoard.innerHTML = '';
+                
+                // Создаем ячейки
+                for (let i = 0; i < cellCount; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell color-white';
+                    cell.setAttribute('data-index', i);
+                    cell.setAttribute('data-color', 'white');
+                    cell.addEventListener('click', handleCellClick);
+                    gameBoard.appendChild(cell);
+                }
+                
+                // Добавляем кнопки управления
+                const newGameBtn = document.getElementById('new-game');
+                const resetWhiteBtn = document.getElementById('reset-white');
+                menuBtn.addEventListener('click', returnToMenu);
+                
+                newGameBtn.addEventListener('click', startNewGame);
+                resetWhiteBtn.addEventListener('click', resetToWhite);
+                
+                // Создаем начальное состояние
+                startNewGame();
+            }
+            
+            function returnToMenu() {
+                gameScreen.style.display = 'none';
+                startScreen.style.display = 'flex';
+            }
+            
+            function startNewGame() {
+                const cells = document.querySelectorAll('.cell');
+                
+                // Сначала сбрасываем все в белый
+                resetToWhite();
+                
+                // Делаем несколько случайных ходов для создания начального состояния
+                setTimeout(() => {
+                    for (let i = 0; i < 10; i++) {
+                        const randomIndex = Math.floor(Math.random() * cellCount);
+                        updateColors(randomIndex);
+                    }
+                }, 100);
+            }
+            
+            function resetToWhite() {
+                const cells = document.querySelectorAll('.cell');
+                cells.forEach(cell => {
+                    cell.setAttribute('data-color', 'white');
+                    cell.className = 'cell color-white';
+                });
+            }
+            
+            function handleCellClick(e) {
+                const index = parseInt(e.target.getAttribute('data-index'));
+                updateColors(index);
+            }
+            
+            function updateColors(index) {
+                const cells = document.querySelectorAll('.cell');
+                
+                // Обновляем текущую ячейку
+                changeCellColor(index);
+                
+                // Обновляем левого соседа (если есть)
+                if (index > 0) {
+                    changeCellColor(index - 1);
+                }
+                
+                // Обновляем правого соседа (если есть)
+                if (index < cellCount - 1) {
+                    changeCellColor(index + 1);
+                }
+            }
+            
+            function changeCellColor(index) {
+                const cells = document.querySelectorAll('.cell');
+                const cell = cells[index];
+                const currentColor = cell.getAttribute('data-color');
+                const currentIndex = COLORS.indexOf(currentColor);
+                
+                // Определяем следующий цвет с учетом выбранного количества цветов
+                let nextIndex = (currentIndex + 1) % colorCount;
+                if (nextIndex >= colorCount) nextIndex = 0;
+                
+                const nextColor = COLORS[nextIndex];
+                
+                // Обновляем ячейку
+                cell.setAttribute('data-color', nextColor);
+                cell.className = 'cell ' + COLOR_CLASSES[nextIndex];
+            }
+        });
+    </script>
+</body>
+</html>
